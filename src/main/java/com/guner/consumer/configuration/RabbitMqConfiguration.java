@@ -63,7 +63,10 @@ public class RabbitMqConfiguration {
 
     @Bean
     Binding deadLetterBinding() {
-        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with("deadLetterRoutingKey");
+        return BindingBuilder
+                .bind(deadLetterQueue())
+                .to(deadLetterExchange())
+                .with("deadLetterRoutingKey");
     }
 
     @Bean
