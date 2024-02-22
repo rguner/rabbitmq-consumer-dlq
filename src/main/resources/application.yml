@@ -1,0 +1,42 @@
+server:
+  port: 9200
+
+spring:
+  h2:
+    console.enabled: true
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      encoding: UTF-8
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+logging:
+  level:
+    com:
+      guner:
+        consumer: DEBUG
+
+single-consumer:
+  queue:
+    name:
+      single-queue: single-queue
+      single-queue-dlq: single-queue-dlq
+  topic-exchange:
+    name: single-topic-exchange
+  routing:
+    key:
+      single-routing: single-routing
+  dead-letter-exchange:
+    name: single-queue-dlx
