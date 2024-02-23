@@ -16,6 +16,7 @@ public class RabbitMqDlqListener {
 
     private final ChargingRecordService chargingRecordService;
 
+    /*
     @RabbitListener(queues = "${single-consumer.queue.name.single-queue-dlq}")
     public void listenDlqMessage(ChargingRecord chargingRecord) {
         log.debug("Charging Message Received from DLQ, thread: {}", Thread.currentThread().getName());
@@ -26,5 +27,7 @@ public class RabbitMqDlqListener {
             chargingRecordService.createChargingRecord(chargingRecord);
         }
     }
+
+     */
 
 }
