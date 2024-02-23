@@ -45,6 +45,7 @@ public class RabbitMqListener {
         if (messageChargingRecord.getPayload().getSourceGsm().endsWith("0")) {
             log.error("Charging Message Source Gsm ends with 0, NACK");
             try {
+                //basicNack(long deliveryTag, boolean multiple, boolean requeue)
                 //channel.basicNack(deliveryTag, false, true); // requeue, it requeues to the same queue. Not to DLQ
                 channel.basicNack(deliveryTag, false, false); // no requeue, it sends to DLQ
             } catch (Exception e) {
@@ -53,6 +54,7 @@ public class RabbitMqListener {
         } else {
             chargingRecordService.createChargingRecord(messageChargingRecord.getPayload());
             try {
+                // basicAck(long deliveryTag, boolean multiple)
                 channel.basicAck(deliveryTag, false);
             } catch (Exception e) {
                 log.error("Error while acknowledging message", e);
