@@ -27,10 +27,11 @@ public class RabbitMqConfiguration {
     @Value("${single-consumer.queue.name.single-queue-dlq}")
     private String queueSingleDlq;
 
+
     @Bean
     public Queue queueSingle() {
         return QueueBuilder.durable(queueSingle)
-                .deadLetterExchange(deadLetterExchange)
+                .deadLetterExchange(deadLetterExchange) // to dead letter exchange
                 //.withArgument("x-dead-letter-exchange", deadLetterExchange)
                 //.withArgument("x-dead-letter-exchange", "")
                 .deadLetterRoutingKey("deadLetterRoutingKey")
@@ -56,8 +57,8 @@ public class RabbitMqConfiguration {
     public Queue deadLetterQueue() {
         return QueueBuilder.durable(queueSingleDlq)
                 .ttl(5000)
-                .deadLetterExchange(topicExchange)
-                .deadLetterRoutingKey(routingKeySingle)
+                .deadLetterExchange(topicExchange) // to original exchange
+                .deadLetterRoutingKey(routingKeySingle) // to original routing key
                 .build();
     }
 

@@ -67,7 +67,7 @@ public class RabbitMqDlqListenerWithRetry {
      Note that the array is sorted most-recent-first, so the most recent dead-lettering will be recorded in the first entry.
 
 
-     /*
+     /* NO NEED TO LISTEN DLQ, With ttl defined in deaa-letter-queue, message will be sent to original queue.
      /*
     @RabbitListener(queues = "${single-consumer.queue.name.single-queue-dlq}")
     public void processFailedMessagesRetryHeaders(ChargingRecord chargingRecord, @Header("x-death") Map<String, List<?>> deathHeader) {
