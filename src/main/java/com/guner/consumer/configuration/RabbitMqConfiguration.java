@@ -30,9 +30,11 @@ public class RabbitMqConfiguration {
     @Bean
     public Queue queueSingle() {
         return QueueBuilder.durable(queueSingle)
-                .withArgument("x-dead-letter-exchange", deadLetterExchange)
+                .deadLetterExchange(deadLetterExchange)
+                //.withArgument("x-dead-letter-exchange", deadLetterExchange)
                 //.withArgument("x-dead-letter-exchange", "")
-                .withArgument("x-dead-letter-routing-key", "deadLetterRoutingKey")
+                .deadLetterRoutingKey("deadLetterRoutingKey")
+                //.withArgument("x-dead-letter-routing-key", "deadLetterRoutingKey")
                 .build();
     }
 
@@ -53,6 +55,9 @@ public class RabbitMqConfiguration {
     @Bean
     public Queue deadLetterQueue() {
         return QueueBuilder.durable(queueSingleDlq)
+                .ttl(5000)
+                //.deadLetterExchange(topicExchange)
+                //.deadLetterRoutingKey(routingKeySingle)
                 .build();
     }
 

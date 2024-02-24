@@ -67,7 +67,8 @@ public class RabbitMqDlqListenerWithRetry {
      Note that the array is sorted most-recent-first, so the most recent dead-lettering will be recorded in the first entry.
 
 
-     */
+     /*
+     /*
     @RabbitListener(queues = "${single-consumer.queue.name.single-queue-dlq}")
     public void processFailedMessagesRetryHeaders(ChargingRecord chargingRecord, @Header("x-death") Map<String, List<?>> deathHeader) {
         log.info("DLQ ---- Received message from DLQ with x-death header {} ", deathHeader);
@@ -80,8 +81,8 @@ public class RabbitMqDlqListenerWithRetry {
         log.info("Retrying message for the {} time", retriesCnt);
         rabbitTemplate.convertAndSend(topicExchange, routingKeySingle, chargingRecord);
 
-
     }
+    */
 
 }
 
