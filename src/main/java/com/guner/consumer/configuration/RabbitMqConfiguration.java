@@ -56,8 +56,8 @@ public class RabbitMqConfiguration {
     public Queue deadLetterQueue() {
         return QueueBuilder.durable(queueSingleDlq)
                 .ttl(5000)
-                //.deadLetterExchange(topicExchange)
-                //.deadLetterRoutingKey(routingKeySingle)
+                .deadLetterExchange(topicExchange)
+                .deadLetterRoutingKey(routingKeySingle)
                 .build();
     }
 
