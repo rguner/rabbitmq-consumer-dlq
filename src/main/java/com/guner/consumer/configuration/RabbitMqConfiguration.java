@@ -12,29 +12,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfiguration {
 
-    @Value("${single-consumer.topic-exchange.name}")
+    @Value("${single-consumer.exchange}")
     private String topicExchange;
 
-    @Value("${single-consumer.queue.name.single-queue}")
+    @Value("${single-consumer.queue}")
     private String queueSingle;
 
-    @Value("${single-consumer.routing.key.single-routing}")
+    @Value("${single-consumer.routing-key}")
     private String routingKeySingle;
 
-    @Value("${single-consumer.dead-letter-exchange.name}")
+    @Value("${single-consumer.exchange}-DLX")
     private String deadLetterExchange;
 
-    @Value("${single-consumer.queue.name.single-queue-dlq}")
-    private String queueSingleDlq;
+    @Value("${single-consumer.queue}-DLQ")
+    private String deadLetterSingleQueue;
+
+    @Value("${single-consumer.exchange}-exhausted")
+    private String exhaustedExchange;
+
+    @Value("${single-consumer.queue}-exhausted")
+    private String exhaustedSingleQueue;
+
 
 
     @Bean
     public Queue queueSingle() {
         return QueueBuilder.durable(queueSingle)
                 .deadLetterExchange(deadLetterExchange) // to dead letter exchange
+                .deadLetterRoutingKey("deadLetterRoutingKey")
                 //.withArgument("x-dead-letter-exchange", deadLetterExchange)
                 //.withArgument("x-dead-letter-exchange", "")
-                .deadLetterRoutingKey("deadLetterRoutingKey")
                 //.withArgument("x-dead-letter-routing-key", "deadLetterRoutingKey")
                 .build();
     }
@@ -55,7 +62,7 @@ public class RabbitMqConfiguration {
 
     @Bean
     public Queue deadLetterQueue() {
-        return QueueBuilder.durable(queueSingleDlq)
+        return QueueBuilder.durable(deadLetterSingleQueue)
                 .ttl(5000)
                 .deadLetterExchange(topicExchange) // to original exchange
                 .deadLetterRoutingKey(routingKeySingle) // to original routing key
@@ -73,6 +80,25 @@ public class RabbitMqConfiguration {
                 .bind(deadLetterQueue())
                 .to(deadLetterExchange())
                 .with("deadLetterRoutingKey");
+    }
+
+    @Bean
+    public Queue exhaustedQueue() {
+        return QueueBuilder.durable(exhaustedSingleQueue)
+                .build();
+    }
+
+    @Bean
+    DirectExchange exhaustedExchange() {
+        return new DirectExchange(exhaustedExchange);
+    }
+
+    @Bean
+    Binding exhaustedBinding() {
+        return BindingBuilder
+                .bind(exhaustedQueue())
+                .to(exhaustedExchange())
+                .with(".#");
     }
 
     @Bean

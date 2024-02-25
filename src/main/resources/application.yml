@@ -29,14 +29,7 @@ logging:
         consumer: DEBUG
 
 single-consumer:
-  queue:
-    name:
-      single-queue: single-queue
-      single-queue-dlq: single-queue-dlq
-  topic-exchange:
-    name: single-topic-exchange
-  routing:
-    key:
-      single-routing: single-routing
-  dead-letter-exchange:
-    name: single-queue-dlx
+  queue: single-queue
+  exchange: single-exchange
+  routing-key: single-routing
+  max-delivery-count: 10

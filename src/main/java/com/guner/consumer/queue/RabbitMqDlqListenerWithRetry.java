@@ -27,12 +27,6 @@ public class RabbitMqDlqListenerWithRetry {
 
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${single-consumer.topic-exchange.name}")
-    private String topicExchange;
-
-    @Value("${single-consumer.routing.key.single-routing}")
-    private String routingKeySingle;
-
     /**
      *
      *
