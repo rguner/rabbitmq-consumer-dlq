@@ -35,10 +35,10 @@ public class RabbitMqListener {
     private String exhaustedExchange;
 
 
-    // NACK with throwing Exception, it works if MessageNotSuitableException messages goes to DLQ
-    //@RabbitListener(queues = "${single-consumer.queue.name.single-queue}", containerFactory = "rabbitListenerContainerFactory")
+    // NACK with throwing Exception, it works if MessageNotSuitableException messages goes to DLQ, but not goes to exhausted, since there is no code for exhausted
+    //@RabbitListener(queues = "${single-consumer.queue}", containerFactory = "rabbitListenerContainerFactory")
    /*
-    @RabbitListener(queues = "${single-consumer.queue.name.single-queue}")
+    @RabbitListener(queues = "${single-consumer.queue}")
     public void listenMessage(ChargingRecord chargingRecord) {
         log.debug("Charging Message Received, thread: {}", Thread.currentThread().getName());
         if (chargingRecord.getSourceGsm().endsWith("0")) {
