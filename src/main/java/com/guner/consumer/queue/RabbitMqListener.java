@@ -37,7 +37,7 @@ public class RabbitMqListener {
 
     // NACK with throwing Exception, it works if MessageNotSuitableException messages goes to DLQ, but not goes to exhausted, since there is no code for exhausted
     //@RabbitListener(queues = "${single-consumer.queue}", containerFactory = "rabbitListenerContainerFactory")
-   /*
+
     @RabbitListener(queues = "${single-consumer.queue}")
     public void listenMessage(ChargingRecord chargingRecord) {
         log.debug("Charging Message Received, thread: {}", Thread.currentThread().getName());
@@ -47,9 +47,9 @@ public class RabbitMqListener {
         }
         chargingRecordService.createChargingRecord(chargingRecord);
     }
-*/
 
 
+/*
     @RabbitListener(queues = "${single-consumer.queue}", ackMode = "MANUAL")
     public void listenWithSpringMessage(org.springframework.messaging.Message<ChargingRecord> messageChargingRecord,
                                              Channel channel,
@@ -70,6 +70,8 @@ public class RabbitMqListener {
             processMessage(messageChargingRecord, channel, deliveryTag);
         }
     }
+
+ */
 
     private void processMessage(Message<ChargingRecord> messageChargingRecord, Channel channel, long deliveryTag) {
         if (messageChargingRecord.getPayload().getSourceGsm().endsWith("0")) {
