@@ -3,7 +3,6 @@ package com.guner.consumer.queue;
 import com.guner.consumer.entity.ChargingRecord;
 import com.guner.consumer.exception.MessageNotSuitableException;
 import com.guner.consumer.service.ChargingRecordService;
-import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,7 +21,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RabbitMqListener {
+public class RabbitMqListenerWithExhausted {
 
     private final RabbitTemplate rabbitTemplate;
     private final ChargingRecordService chargingRecordService;
@@ -34,18 +33,31 @@ public class RabbitMqListener {
     @Value("${single-consumer.exchange}-exhausted")
     private String exhaustedExchange;
 
-
-    // NACK with throwing Exception, it works if MessageNotSuitableException messages goes to DLQ, but not goes to exhausted, since there is no code for exhausted
-    //@RabbitListener(queues = "${single-consumer.queue}", containerFactory = "rabbitListenerContainerFactory")
-    /*
     @RabbitListener(queues = "${single-consumer.queue}")
-    public void listenMessage(ChargingRecord chargingRecord) {
+    public void listenWithSpringMessage(org.springframework.messaging.Message<ChargingRecord> messageChargingRecord,
+                                             @Header(name = "x-death",required = false) List<Map<String, ?>> xdeathHeader) {
         log.debug("Charging Message Received, thread: {}", Thread.currentThread().getName());
-        if (chargingRecord.getSourceGsm().endsWith("0")) {
-            log.error("Charging Message Source Gsm ends with 0, NACK with throwing Exception");
-            throw new MessageNotSuitableException("Source GSM ends with 0");
+        int deliveryCount = getDeliveryCount(xdeathHeader);
+        if (deliveryCount >= maxDeliveryCount) {
+            log.debug("Message is exhausted with delivery count [{}]", deliveryCount);
+            rabbitTemplate.convertAndSend(exhaustedExchange, ".#", messageChargingRecord.getPayload());
+        } else {
+            processMessage(messageChargingRecord);
         }
-        chargingRecordService.createChargingRecord(chargingRecord);
     }
-     */
+
+    private void processMessage(Message<ChargingRecord> messageChargingRecord) {
+        if (messageChargingRecord.getPayload().getSourceGsm().endsWith("0")) {
+            log.error("Charging Message Source Gsm ends with 0");
+            throw new MessageNotSuitableException("Source GSM ends with 0"); // it sends to DLQ
+        } else {
+            chargingRecordService.createChargingRecord(messageChargingRecord.getPayload());
+        }
+    }
+
+    public int getDeliveryCount(List<Map<String, ?>> deathHeader) {
+        return (int) (CollectionUtils.isEmpty(deathHeader) ? 0
+                : (long) deathHeader.get(0).get(COUNT_FIELD));
+    }
+
 }
